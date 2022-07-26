@@ -1,0 +1,46 @@
+org: simonrenblad
+app: hk-walkability-api
+service: hk-walkability-api
+frameworkVersion: '3'
+
+custom:
+  documentation:
+    api:
+      version: '1.0.0'
+      title: 'HK Walkability API'
+      description: 'Exposes Walkability data from HK survey'
+      models:
+        - name: "Response"
+          description: "Successful response"
+          contentType: "application/json"
+          schema: {}
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+functions:
+  api:
+    handler: handler.handler
+    events:
+      - httpApi:
+          method: "GET"
+          path: "/v1/api/data"
+          documentation:
+            summary: "Get walkability data"
+            description: "Get and filter walkability data"
+            queryParams:
+              - name: "area"
+                description: "The name of the district where data was collected"
+                schema:
+                  type: "string"
+            methodResponse:
+              - statusCode: 200
+                responseModels:
+                  application/json: "Response"
+
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-openapi-documenter
